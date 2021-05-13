@@ -12,7 +12,7 @@ library(dplyr)
 library(rgbif)
 library(BIRDS)
 
-# import raster elevation data ordanance survey projection ----
+# import raster elevation data ordnance survey projection ----
 
 elevation <- raster("www/elevation.tif")
 plot(elevation)
@@ -23,12 +23,17 @@ plot(elevation)
 plot(elevation, col=terrain.colors(30))
 
 # converting lat and long 
+# changing elevation so can be loaded into leaflet quicker
 ll_crs <- CRS("+init=epsg:4326")  # 4326 is the code for latitude longitude
 elevation_ll <- projectRaster(elevation, crs=ll_crs)
 mapview(elevation_ll)
 elevation500m <- aggregate(elevation, fact=10)
 elevation500m_ll <- projectRaster(elevation500m, crs=ll_crs)
 mapview(elevation500m_ll)
+
+# saving as RDS file to import later on 
+saveRDS(elevation500m_ll, file = "elevation500m_ll.RDS")
+
 
 # creating elevation in leaflet ----
 elevation_view <- leaflet() %>% 
@@ -42,10 +47,6 @@ elevation_view <- leaflet() %>%
   )
 
 elevation_view
-
-# saving as RDS
-saveRDS(elevation500m_ll, file = "elevation.rds")
-
 
 # lakes in leaflet ----
 lakes <- st_read("www/cumbria_lakes.shp")
@@ -64,6 +65,9 @@ lake_view <- leaflet() %>%
 
 lake_view
 
+# saving RDS file to import later on
+saveRDS(lakes_ll, file = "lakes_ll.RDS")
+
 # settlements in Cumbria in leaflet ----
 settlements <- st_read("www/cumbria_settlements.shp")
 settlements_ll <- st_transform(settlements,crs=ll_crs)
@@ -80,6 +84,9 @@ settlement_view <- leaflet() %>%
   )
 
 settlement_view
+
+# saving RDS to import later on
+saveRDS(settlements_ll, file = "settlements_ll.RDS")
 
 # rivers in leaflet ----
 
@@ -98,6 +105,9 @@ rivers_view <- leaflet() %>%
   )
 
 rivers_view
+
+# saving RDS to import later
+saveRDS(rivers_ll, file = "rivers_ll.RDS")
 
 # loading in some NBN data for different species to be viewed as part of the cumbrian environment ----
 
